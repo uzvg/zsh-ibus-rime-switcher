@@ -1,0 +1,10 @@
+#!/usr/bin/zsh
+
+vim_mode_status[index]=${vim_mode_status[index]:-1}  # 如果 im_status[index] 未定义，则赋值为 1
+vim_mode_status[mode]=${vim_mode_status[mode]:-A}    # 如果 im_status[mode] 未定义，则赋值为 A
+
+# 只有在当前输入法状态不等于vim-mode状态时，才进行输入法切换
+if [[ "${origiin_im_status[index]}" != "${vim_mode_status[index]}" ]] || [[ "${origiin_im_status[mode]}" != "${vim_mode_status[mode]}" ]]
+then
+  dbus-send --session --type=method_call --print-reply=literal --dest=org.gnome.Shell /org/gnome/Shell/Extensions/IbusSwitcher org.gnome.Shell.Extensions.IbusSwitcher.SwitchSource uint32:${vim_mode_status[index]} string:${vim_mode_status[mode]} > /dev/null
+fi

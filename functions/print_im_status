@@ -1,0 +1,20 @@
+#!/usr/bin/zsh
+
+# 获取当前输入法状态
+output=$(dbus-send --session \
+  --type=method_call \
+  --print-reply=literal \
+  --dest=org.gnome.Shell \
+  /org/gnome/Shell/Extensions/IbusSwitcher \
+  org.gnome.Shell.Extensions.IbusSwitcher.CurrentSource)
+# 解析输出并保存到关联数组
+typeset -A im_status
+local IFS_ORIGIN=$IFS
+IFS='|' read -r im_index im_mode <<< "$output"
+IFS=$IFS_ORIGIN   
+# 
+# 利用zsh Shell中的参数扩展${variable//pattern/replacement}，删除参数值中的所有空格 
+im_status[index]=${im_index// /}
+im_status[mode]=${im_mode// /}
+
+echo "Index: ${im_status[index]}, Mode: ${im_status[mode]}"

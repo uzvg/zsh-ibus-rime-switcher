@@ -1,0 +1,15 @@
+#!/usr/bin/zsh
+
+typeset -Ag origin_im_status
+local output=$(dbus-send --session \
+  --type=method_call \
+  --print-reply=literal \
+  --dest=org.gnome.Shell \
+  /org/gnome/Shell/Extensions/IbusSwitcher \
+  org.gnome.Shell.Extensions.IbusSwitcher.CurrentSource)
+# 解析输出并保存到关联数组
+local IFS_ORIGIN=$IFS
+IFS='|' read -r im_index im_mode <<< "$output"
+IFS=$IFS_ORIGIN   
+origin_im_status[index]=${im_index// /}
+origin_im_status[mode]=${im_mode// /}
